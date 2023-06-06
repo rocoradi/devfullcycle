@@ -24,14 +24,14 @@ const findAll = (connection) => {
 
 const insert = (connection) => {
     return new Promise((resolve, reject) => {
-        connection.query("INSERT INTO pessoa (name) values ('Rodrigo')", (error) => {
+        connection.query("INSERT INTO pessoa (nome) values ('Rodrigo')", (error) => {
             return error ? reject(error) : resolve()
         })
     })
 }
 
 const toResponse = (pessoa) => {
-    const mappedPessoa = pessoa.map(value => `<p>- ${value['name']}</p>`).join('')
+    const mappedPessoa = pessoa.map(value => `<p>- ${value['nome']}</p>`).join('')
     return `<h1>Full Cycle Rocks!</h1>${mappedPessoa}`
 }
 
