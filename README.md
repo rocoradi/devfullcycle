@@ -90,3 +90,9 @@ dockerize -wait tcp://db:3306 -timeout 50s
 
 //Ou utilizar a lib 'wait-for-it' , como eu usei aqui
 https://github.com/codeedu/docker-wait-for-it/tree/main
+
+//SUBIR NO DOCKERHUB
+//Buildar imagem
+docker build -t rodrigocoradi/fullcycle-desafiogolang .
+docker login
+docker push rodrigocoradi/fullcycle-desafiogolang
