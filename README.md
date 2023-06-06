@@ -37,3 +37,56 @@ docker run --name nginx -d -v meuvolume:/usr/home/coradi nginx
 
 // Para matar o volume criado
 docker volume prune
+
+// Tipos de Network
+1 - bridge: para um container se comunicar facilmente com o outro container
+2 - host: ele mescla a network do docker (container) com a máquina do docker host (servidor que está instalado o docker)
+3 - overlay: comunicação entre clusters diferentes (máquinas diferentes)
+4 - macvlan: setar mac para o container (nao é comum de usar)
+5 - none: container roda totalmente de forma isolada
+
+// Criar rede bridge
+docker network create --driver bridge minharede
+
+// Rodar container apotando para a rede criada
+docker run -dit --name ubuntu1 --network minharede bash
+
+// Rodar o container e matar após executar
+docker run rm
+
+// Conectar container em uma network existente
+docker network connect minharede ubuntu3
+
+// Acessar de dentro do container o meu pc 
+// usar o caminho http://host.docker.internal:8000 (ow a porta que esta rodando o serviço que deseja conectar)
+
+// Comando no docker build de '-f' para passar outro Dockerfile, como por exemplo Dockerfile.prod
+
+//Gerar imagem
+// O '.' significa onde está o arquivo Dockerfile
+docker build -t rodrigocoradi/nginx:prod . -f Dockerfile.prod
+docker build -t rodrigocoradi/laravel:prod laravel -f laravel/Dockerfile.prod
+
+// DOCKER COMPOSE
+
+docker-compose up -d (subir)
+docker-compose down (matar)
+docker-compose ps (listar)
+docker-compose up -d --build (rebuildar apenas o que mudou no Dockerfile/imagem)
+
+
+//Deletar todas as imagens
+docker rmi $(docker images -a -q)
+
+//acessar bash
+//db = nome do container
+docker exec -it db bash
+
+//Comando depends_on no compose serve para mostrar que um app depende do outro container
+//porém ele não garante que irá esperar o container dependente subir
+//Para isso, usar a lib dockerize (de dentro do container)
+//comando abaixo para visualizar
+dockerize -wait tcp://db:3306 -timeout 50s
+
+//Ou utilizar a lib 'wait-for-it' , como eu usei aqui
+https://github.com/codeedu/docker-wait-for-it/tree/main
