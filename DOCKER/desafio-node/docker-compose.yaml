@@ -1,0 +1,53 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: ./node
+    container_name: app
+    image: rodrigocoradi/desafio-node:latest
+    networks:
+      - desafio
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "app:3000/health" ]
+      timeout: 10s
+      retries: 10
+      interval: 2s
+
+  nginx:
+    build:
+      context: ./nginx
+    image: rodrigocoradi/desafio-nginx:latest
+    container_name: nginx
+    ports:
+      - "8080:80"
+    networks:
+      - desafio
+    depends_on:
+      app:
+        condition: service_healthy
+
+  db:
+    image: mysql:5.7
+    command: --innodb-use-native-aio=0
+    container_name: db
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+      - ./mysql/init:/docker-entrypoint-initdb.d
+    environment:
+      - MYSQL_DATABASE=nodedb
+      - MYSQL_ROOT_PASSWORD=root
+    networks:
+      - desafio
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "-uroot", "-proot", "-h", "localhost", "ping"]
+      timeout: 10s
+      retries: 10
+      interval: 2s
+
+networks:
+  desafio:
+    driver: bridge
